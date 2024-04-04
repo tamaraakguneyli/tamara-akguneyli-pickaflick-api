@@ -65,7 +65,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/profile", async (req, res) => {
+router.get("/", async (req, res) => {
   if (!req.headers.authorization) {
     return res.status(401).send({ error: "Please login" });
   }

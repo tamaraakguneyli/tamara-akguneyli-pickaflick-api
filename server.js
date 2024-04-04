@@ -10,7 +10,7 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use("/", userRoutes);
+app.use("/pickaflix", userRoutes);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
