@@ -24,7 +24,7 @@ router.post("/register", async (req, res) => {
   };
 
   try {
-    await knex("users").insert(newUser);
+    await knex("user").insert(newUser);
     return res.status(201).json(newUser);
   } catch (error) {
     console.log(error);
@@ -40,7 +40,7 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    const user = await knex("users").where({ username: username }).first();
+    const user = await knex("user").where({ username: username }).first();
 
     if (!user) {
       return res.status(400).json({ error: "User doesn't exist" });
@@ -81,7 +81,7 @@ router.get("/", async (req, res) => {
     if (verified) {
       const { id } = verified;
 
-      const user = await knex("users").where({ id }).first();
+      const user = await knex("user").where({ id }).first();
 
       if (!user) {
         return res.status(404).json({ error: "User not found" });
