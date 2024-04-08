@@ -10,7 +10,7 @@ router.get("/:userId", async (req, res) => {
 
   try {
     const watchlist = await knex("watchlist")
-      .where({ user_id: userId })
+      .where({ user_id: userId, in_watchlist: 1 })
       .join("mediaitem", "watchlist.mediaitem_id", "mediaitem.id")
       .select(
         "watchlist.id",
@@ -34,31 +34,42 @@ router.post("/", async (req, res) => {
   try {
     const { title, release_date, overview, poster_url } = media;
 
-    const existingMedia = await knex("mediaitem").where({ title }).first();
+    let existingMedia = await knex("mediaitem").where({ title }).first();
 
     let mediaId;
 
-    if (existingMedia) {
-      mediaId = existingMedia.id;
-    } else {
+    if (!existingMedia) {
       const [newMediaId] = await knex("mediaitem").insert({
         title,
         release_date,
         overview,
         poster_url,
       });
+
       mediaId = newMediaId;
+    } else {
+      mediaId = existingMedia.id;
     }
 
-    await knex("watchlist").insert({
-      user_id: userId,
-      mediaitem_id: mediaId,
-      in_watchlist: true,
-      watched: false,
-      review: null,
-    });
+    const isInWatchlist = await knex("watchlist")
+      .where({ user_id: userId, mediaitem_id: mediaId })
+      .first();
 
-    res.status(201).json({ message: "Media added to watchlist successfully" });
+    if (!isInWatchlist) {
+      await knex("watchlist").insert({
+        user_id: userId,
+        mediaitem_id: mediaId,
+        in_watchlist: true,
+        watched: false,
+        review: null,
+      });
+
+      res
+        .status(201)
+        .json({ message: "Media added to watchlist successfully" });
+    } else {
+      res.status(400).json({ error: "Media item already in the watchlist" });
+    }
   } catch (error) {
     console.error("Error adding media to watchlist:", error);
     res
@@ -66,4 +77,16 @@ router.post("/", async (req, res) => {
       .json({ error: "Internal server error", details: error.message });
   }
 });
+
+router.delete("/:mediaitemId", async (req, res, next) => {
+  const mediaitemId = req.params.mediaitemId;
+
+  try {
+    await knex("watchlist").where({ mediaitem_id: mediaitemId }).delete();
+  } catch (error) {
+    console.error("Error removing media from watchlist:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;
