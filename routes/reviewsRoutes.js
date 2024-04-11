@@ -26,14 +26,17 @@ router.put("/", async (req, res) => {
 router.get("/:mediaId", async (req, res) => {
   if (req.query.api_id) {
     const reviews = await knex("watchlist")
-      .join("mediaitem", "watchlist.mediaitem_id", "mediaitem.id")
+      .join("mediaitem", "mediaitem.id", "watchlist.mediaitem_id")
+      .join("user", "user.id", "watchlist.user_id")
       .select(
         "watchlist.id",
         "mediaitem.id",
         "watchlist.review",
-        "mediaitem.api_id"
+        "mediaitem.api_id",
+        "user.username"
       )
-      .where({ api_id: req.query.api_id });
+      .where({ api_id: req.query.api_id })
+      .havingNotNull("review");
 
     return res.json(reviews);
   }
@@ -41,7 +44,8 @@ router.get("/:mediaId", async (req, res) => {
   try {
     const reviews = await knex("watchlist")
       .select("id", "review", "user_id")
-      .where({ mediaitem_id: mediaId });
+      .where({ mediaitem_id: mediaId })
+      .havingNotNull("review");
 
     res.json(reviews);
   } catch (error) {
@@ -50,28 +54,13 @@ router.get("/:mediaId", async (req, res) => {
   }
 });
 
-// router.get("/:apiId", async (req, res) => {
-//   const { mediaId } = req.params;
-
-//   try {
-//     const reviews = await knex("watchlist")
-//       .select("id", "review", "user_id")
-//       .where({ mediaitem_id: mediaId });
-
-//     res.json(reviews);
-//   } catch (error) {
-//     console.error("Error fetching reviews:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-router.delete("/", async (req, res) => {
+router.put("/", async (req, res) => {
   const { mediaitem_id, user_id, review } = req.body;
 
   try {
     await knex("watchlist")
       .where({ mediaitem_id: mediaitem_id, user_id: user_id })
-      .del({ review: review });
+      .update({ review: review });
 
     res.status(200).json({ message: "Review deleted successfully" });
   } catch (error) {
