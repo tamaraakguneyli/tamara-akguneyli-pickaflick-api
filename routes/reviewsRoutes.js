@@ -5,37 +5,39 @@ const environment = process.env.NODE_ENV || "development";
 const configuration = require("../knexfile")[environment];
 const knex = require("knex")(configuration);
 
-router.post("/", async (req, res) => {
+router.put("/", async (req, res) => {
   const { mediaitem_id, user_id, review } = req.body;
 
   try {
-    const existingEntry = await knex("watchlist")
-      .where({ mediaitem_id, user_id })
-      .first();
+    await knex("watchlist")
+      .where({
+        mediaitem_id: mediaitem_id,
+        user_id: user_id,
+      })
+      .update({ review: review });
 
-    if (existingEntry) {
-      await knex("watchlist")
-        .where({ mediaitem_id, user_id })
-        .update({ review });
-
-      res.status(200).json({ message: "Review updated successfully" });
-    } else {
-      await knex("watchlist").insert({
-        mediaitem_id,
-        user_id,
-        review,
-      });
-
-      res.status(201).json({ message: "Review added successfully" });
-    }
+    res.status(200).json({ message: "Review updated successfully" });
   } catch (error) {
-    console.error("Error adding or updating review:", error);
-    res.status(500).json({ error: "Failed to add or update review" });
+    console.error("Error updating review:", error);
+    res.status(500).json({ error: "Failed to update review" });
   }
 });
-router.get("/:mediaId", async (req, res) => {
-  const { mediaId } = req.params;
 
+router.get("/:mediaId", async (req, res) => {
+  if (req.query.api_id) {
+    const reviews = await knex("watchlist")
+      .join("mediaitem", "watchlist.mediaitem_id", "mediaitem.id")
+      .select(
+        "watchlist.id",
+        "mediaitem.id",
+        "watchlist.review",
+        "mediaitem.api_id"
+      )
+      .where({ api_id: req.query.api_id });
+
+    return res.json(reviews);
+  }
+  let { mediaId } = req.params;
   try {
     const reviews = await knex("watchlist")
       .select("id", "review", "user_id")
@@ -45,6 +47,36 @@ router.get("/:mediaId", async (req, res) => {
   } catch (error) {
     console.error("Error fetching reviews:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// router.get("/:apiId", async (req, res) => {
+//   const { mediaId } = req.params;
+
+//   try {
+//     const reviews = await knex("watchlist")
+//       .select("id", "review", "user_id")
+//       .where({ mediaitem_id: mediaId });
+
+//     res.json(reviews);
+//   } catch (error) {
+//     console.error("Error fetching reviews:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+router.delete("/", async (req, res) => {
+  const { mediaitem_id, user_id, review } = req.body;
+
+  try {
+    await knex("watchlist")
+      .where({ mediaitem_id: mediaitem_id, user_id: user_id })
+      .del({ review: review });
+
+    res.status(200).json({ message: "Review deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    res.status(500).json({ error: "Failed to delete review" });
   }
 });
 

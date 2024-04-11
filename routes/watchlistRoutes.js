@@ -18,7 +18,8 @@ router.get("/:userId", async (req, res) => {
         "mediaitem.title",
         "mediaitem.overview",
         "mediaitem.poster_url",
-        "mediaitem.release_date"
+        "mediaitem.release_date",
+        "mediaitem.api_id"
       );
 
     res.json(watchlist);
@@ -32,7 +33,9 @@ router.post("/", async (req, res) => {
   const { userId, media } = req.body;
 
   try {
-    const { title, release_date, overview, poster_url } = media;
+    const { title, release_date, overview, poster_url, api_id } = media;
+
+    console.log(media);
 
     let existingMedia = await knex("mediaitem").where({ title }).first();
 
@@ -44,6 +47,7 @@ router.post("/", async (req, res) => {
         release_date,
         overview,
         poster_url,
+        api_id,
       });
 
       mediaId = newMediaId;
@@ -68,7 +72,7 @@ router.post("/", async (req, res) => {
         .status(201)
         .json({ message: "Media added to watchlist successfully" });
     } else {
-      res.status(400).json({ error: "Media item already in the watchlist" });
+      res.status(400).json("is already in your watchlist");
     }
   } catch (error) {
     console.error("Error adding media to watchlist:", error);
