@@ -35,8 +35,6 @@ router.post("/", async (req, res) => {
   try {
     const { title, release_date, overview, poster_url, api_id } = media;
 
-    console.log(media);
-
     let existingMedia = await knex("mediaitem").where({ title }).first();
 
     let mediaId;
@@ -56,7 +54,13 @@ router.post("/", async (req, res) => {
     }
 
     const isInWatchlist = await knex("watchlist")
-      .where({ user_id: userId, mediaitem_id: mediaId })
+      .where({
+        user_id: userId,
+        mediaitem_id: mediaId,
+      })
+      .andWhere(function () {
+        this.where("in_watchlist", true).orWhere("watched", true);
+      })
       .first();
 
     if (!isInWatchlist) {
@@ -72,7 +76,19 @@ router.post("/", async (req, res) => {
         .status(201)
         .json({ message: "Media added to watchlist successfully" });
     } else {
-      res.status(400).json("is already in your watchlist");
+      const { in_watchlist, watched } = isInWatchlist;
+
+      if (in_watchlist && !watched) {
+        res.status(400).json({
+          error: "is already in your watchlist",
+        });
+      } else if (!in_watchlist && watched) {
+        res.status(400).json({
+          error: "is already in your watched section",
+        });
+      } else {
+        res.status(400).json({ error: "is already in your watchlist" });
+      }
     }
   } catch (error) {
     console.error("Error adding media to watchlist:", error);
@@ -89,6 +105,21 @@ router.delete("/:mediaitemId", async (req, res, next) => {
     await knex("watchlist").where({ mediaitem_id: mediaitemId }).delete();
   } catch (error) {
     console.error("Error removing media from watchlist:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/:mediaitemId", async (req, res) => {
+  const mediaitemId = req.params.mediaitemId;
+
+  try {
+    await knex("watchlist")
+      .where({ mediaitem_id: mediaitemId })
+      .update({ in_watchlist: true, watched: false });
+
+    res.json({ message: "Media moved back to watchlist successfully" });
+  } catch (error) {
+    console.error("Error moving media back to watchlist:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

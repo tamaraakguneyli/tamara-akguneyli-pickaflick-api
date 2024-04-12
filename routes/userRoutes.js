@@ -12,18 +12,37 @@ router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({ error: "Please enter the required fields." });
+    const missingFields = [];
+    if (!username) missingFields.push("username");
+    if (!email) missingFields.push("email");
+    if (!password) missingFields.push("password");
+    const errorMessage = `Please fill in the required fields: ${missingFields.join(
+      ", "
+    )}`;
+    return res.status(400).json({ error: errorMessage });
   }
 
-  const hashedPassword = bcrypt.hashSync(password, 6);
-
-  const newUser = {
-    username,
-    email,
-    password: hashedPassword,
-  };
-
   try {
+    const existingUser = await knex("user")
+      .where({ username })
+      .orWhere({ email })
+      .first();
+    if (existingUser) {
+      const takenField =
+        existingUser.username === username ? "username" : "email";
+      return res
+        .status(400)
+        .json({ error: ` This ${takenField} has already been taken` });
+    }
+
+    const hashedPassword = bcrypt.hashSync(password, 6);
+
+    const newUser = {
+      username,
+      email,
+      password: hashedPassword,
+    };
+
     await knex("user").insert(newUser);
     return res.status(201).json(newUser);
   } catch (error) {
@@ -36,7 +55,13 @@ router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
-    return res.status(400).send("Please enter the required fields");
+    const missingFields = [];
+    if (!username) missingFields.push("username");
+    if (!password) missingFields.push("password");
+    const errorMessage = `Please fill in the required fields: ${missingFields.join(
+      ", "
+    )}`;
+    return res.status(400).json({ error: errorMessage });
   }
 
   try {
