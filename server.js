@@ -13,7 +13,7 @@ app.use(cors());
 
 app.use(express.json());
 
-app.use("/pickaflix", userRoutes);
+app.use("/user", userRoutes);
 
 app.use("/watchlist", watchlistRoutes);
 

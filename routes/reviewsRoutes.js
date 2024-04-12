@@ -24,7 +24,7 @@ router.put("/", async (req, res) => {
 });
 
 router.get("/:mediaId", async (req, res) => {
-  if (req.query.api_id) {
+  if (req.query.external_api_id) {
     const reviews = await knex("watchlist")
       .join("mediaitem", "mediaitem.id", "watchlist.mediaitem_id")
       .join("user", "user.id", "watchlist.user_id")
@@ -35,7 +35,7 @@ router.get("/:mediaId", async (req, res) => {
         "mediaitem.api_id",
         "user.username"
       )
-      .where({ api_id: req.query.api_id })
+      .where({ api_id: req.query.external_api_id })
       .havingNotNull("review");
 
     return res.json(reviews);
