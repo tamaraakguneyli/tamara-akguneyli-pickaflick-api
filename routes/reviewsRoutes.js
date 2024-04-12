@@ -69,4 +69,19 @@ router.put("/", async (req, res) => {
   }
 });
 
+router.get("/:mediaId/users", async (req, res) => {
+  try {
+    const result = await knex
+      .from("watchlist")
+      .innerJoin("user", "watchlist.user_id", "user.id")
+      .where("mediaitem_id", req.params.mediaId)
+      .havingNotNull("review");
+
+    return res.json(result);
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;

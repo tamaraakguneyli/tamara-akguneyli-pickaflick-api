@@ -98,17 +98,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.delete("/:mediaitemId", async (req, res, next) => {
-  const mediaitemId = req.params.mediaitemId;
-
-  try {
-    await knex("watchlist").where({ mediaitem_id: mediaitemId }).delete();
-  } catch (error) {
-    console.error("Error removing media from watchlist:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
 router.put("/:mediaitemId", async (req, res) => {
   const mediaitemId = req.params.mediaitemId;
 

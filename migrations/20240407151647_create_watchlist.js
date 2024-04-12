@@ -10,7 +10,6 @@ exports.up = function (knex) {
     table.boolean("in_watchlist").defaultTo(true);
     table.boolean("watched").defaultTo(false);
     table.text("review");
-
     table.foreign("user_id").references("user.id").onDelete("CASCADE");
     table
       .foreign("mediaitem_id")
