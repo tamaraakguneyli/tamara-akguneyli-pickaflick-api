@@ -1,55 +1,44 @@
 # PickaFlix Back End API
 
-### Installation
+## Installation
 
-1. **Clone the Repository**
+### Clone the Repository
 
-   ```
-   git clone https://github.com/tamaraakguneyli/tamara-akguneyli-pickaflix-api.git
-   cd tamara-akguneyli-tamara-akguneyli-pickaflix-api
-   ```
+git clone https://github.com/tamaraakguneyli/tamara-akguneyli-pickaflix-api.git
+cd tamara-akguneyli-tamara-akguneyli-pickaflix-api
 
 ### Install Dependencies
 
 Ensure you have Node.js installed. Then, install project dependencies using npm:
 
-```
-
 npm install
-```
 
-### Basic .env set-up
+### Basic .env Set-up
 
-Please use `.env.sample` as reference for building up your `.env` file locally. Make sure you provide an `API_KEY` in your `.env` file.
+Please use `.env.sample` as a reference for building up your `.env` file locally. Make sure you provide an `API_KEY` in your `.env` file.
 
 ### Database Migration and Seeding
 
-Use Knex CLI to run migrationsdata:
+Use Knex to run migrations and seed data:
 
-```
 npm run db:migrate
-```
+npm run db:seed
 
-### Starting the Server
+## Starting the Server
 
 To start the backend server, run:
 
-```
 npm start
-
-```
 
 The server will start running at http://localhost:3000.
 
-### Endpoints
+## Endpoints
 
-1. GET /watchlist/:userId
+### GET /watchlist/:userId
 
-HTTP Method: GET
-Parameters: userId (User ID to fetch the watchlist for a specific user)
-
-Example Response:
-json
+- **HTTP Method:** GET
+- **Parameters:** userId (User ID to fetch the watchlist for a specific user)
+- **Example Response:**
 
 [
 {
@@ -68,15 +57,13 @@ json
 }
 ]
 
-2. POST /watchlist
+### POST /watchlist
 
-HTTP Method: POST
-Parameters:
-userId (User ID of the user adding the media)
-media (Media object to be added to the watchlist containing title, overview, release_date, poster_url, api_id)
-
-Example Request Body:
-json
+- **HTTP Method:** POST
+- **Parameters:**
+  - userId (User ID of the user adding the media)
+  - media (Media object to be added to the watchlist containing title, overview, release_date, poster_url, api_id)
+- **Example Request Body:**
 
 {
 "userId": 1,
@@ -88,43 +75,38 @@ json
 "api_id": 12345
 }
 }
-Example Response:
-json
+
+- **Example Response:**
 
 {
 "message": "Media added to watchlist successfully"
 }
 
-3. PUT /watchlist/:mediaitemId
+### PUT /watchlist/:mediaitemId
 
-HTTP Method: PUT
-Parameters: mediaitemId (ID of the media item to be moved back to the watchlist)
-
-Example Response:
-json
+- **HTTP Method:** PUT
+- **Parameters:** mediaitemId (ID of the media item to be moved back to the watchlist)
+- **Example Response:**
 
 {
 "message": "Media moved back to watchlist successfully"
 }
 
-4. PUT /watched/:mediaitemId
+### PUT /watched/:mediaitemId
 
-HTTP Method: PUT
-Parameters: mediaitemId (ID of the media item to be marked as watched)
-
-Example Response:
-json
+- **HTTP Method:** PUT
+- **Parameters:** mediaitemId (ID of the media item to be marked as watched)
+- **Example Response:**
 
 {
 "message": "Media marked as watched successfully"
 }
 
-5. GET /watched/:userId
+### GET /watched/:userId
 
-HTTP Method: GET
-Parameters: userId (User ID to fetch the watched media for a specific user)
-Example Response:
-json
+- **HTTP Method:** GET
+- **Parameters:** userId (User ID to fetch the watched media for a specific user)
+- **Example Response:**
 
 [
 {
@@ -136,15 +118,14 @@ json
 }
 ]
 
-6. POST /user/register
+### POST /user/register
 
-HTTP Method: POST
-Parameters:
-username (String) - User's desired username.
-email (String) - User's email address.
-password (String) - User's chosen password.
-
-Example Request Body:
+- **HTTP Method:** POST
+- **Parameters:**
+  - username (String) - User's desired username.
+  - email (String) - User's email address.
+  - password (String) - User's chosen password.
+- **Example Request Body:**
 
 {
 "username": "example_user",
@@ -152,26 +133,23 @@ Example Request Body:
 "password": "password123"
 }
 
-7. POST /user/login
+### POST /user/login
 
-HTTP Method: POST
-
-Parameter:
-username (String) - User's username.
-password (String) - User's password.
-
-Example Request Body:
+- **HTTP Method:** POST
+- **Parameter:**
+  - username (String) - User's username.
+  - password (String) - User's password.
+- **Example Request Body:**
 
 {
 "username": "example_user",
 "password": "password123"
 }
 
-8. GET /user
+### GET /user
 
-HTTP Method: GET
-
-Example Response:
+- **HTTP Method:** GET
+- **Example Response:**
 
 {
 "id": 1,
@@ -179,6 +157,6 @@ Example Response:
 "email": "user@example.com"
 }
 
-### Front End App Repository
+## Front End App Repository
 
-[Front End App](https://github.com/tamaraakguneyli/tamara-akguneyli-pickaflick)
+[Front End App Repository](https://github.com/tamaraakguneyli/tamara-akguneyli-pickaflick)
