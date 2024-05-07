@@ -1,11 +1,11 @@
-# PickaFlix Back End API
+# PickaFlick Back End API
 
 ## Installation
 
 ### Clone the Repository
 
-git clone https://github.com/tamaraakguneyli/tamara-akguneyli-pickaflix-api.git
-cd tamara-akguneyli-tamara-akguneyli-pickaflix-api
+git clone
+cd 
 
 ### Install Dependencies
 
